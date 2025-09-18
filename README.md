@@ -2,6 +2,11 @@
 
 A lightweight Chrome extension that hides bot comments in GitHub pull request conversations, making it easier to focus on human review comments.
 
+## Links
+
+- 🔗 **GitHub Repository**: [https://github.com/letsintegreat/github-sanitizer](https://github.com/letsintegreat/github-sanitizer)
+- 🐛 **Report an Issue**: [https://github.com/letsintegreat/github-sanitizer/issues](https://github.com/letsintegreat/github-sanitizer/issues)
+
 ## Features
 
 - 🤖 **Automatically detects and hides bot comments** from popular services like:
@@ -24,13 +29,11 @@ A lightweight Chrome extension that hides bot comments in GitHub pull request co
 
 1. **Download the extension files**:
 
-   - Clone or download this repository
-   - Or download the files individually:
-     - `manifest.json`
-     - `content.js`
-     - `styles.css`
-     - `popup.html`
-     - `popup.js`
+   - **Clone the repository**:
+     ```bash
+     git clone https://github.com/letsintegreat/github-sanitizer.git
+     ```
+   - **Or download as ZIP**: Download this repository as a ZIP file and extract it
 
 2. **Icons are included**: The extension comes with all required icon files in the `icons/` directory.
 
@@ -193,7 +196,7 @@ Modify `popup.html` and `popup.js` to:
 
 1. **Refresh the page** - This usually resolves the issue
 2. **Check browser console** for any JavaScript errors
-3. **Report the issue** with the specific PR URL
+3. **[Report the issue](https://github.com/letsintegreat/github-sanitizer/issues)** with the specific PR URL
 
 ### Toggle Button Not Appearing
 
@@ -236,11 +239,11 @@ Required permissions:
 
 Feel free to:
 
-- Report issues or bugs
+- [Report issues or bugs](https://github.com/letsintegreat/github-sanitizer/issues)
 - Suggest new bot patterns to detect
 - Improve the UI/UX
 - Add new features
-- Submit pull requests
+- [Submit pull requests](https://github.com/letsintegreat/github-sanitizer/pulls)
 
 ## License
 
