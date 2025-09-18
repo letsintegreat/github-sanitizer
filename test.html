@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Bot Comment Hider - Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            background: #f6f8fa;
+        }
+        .mock-comment {
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            margin: 10px 0;
+            padding: 15px;
+            background: white;
+        }
+        .author {
+            font-weight: bold;
+            color: #0969da;
+            text-decoration: none;
+        }
+        .Label {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        .Label--secondary {
+            background: #6e7681;
+            color: white;
+        }
+        .comment-body {
+            margin-top: 10px;
+            color: #24292f;
+        }
+        .success { color: #1a7f37; }
+        .error { color: #d1242f; }
+        .info { color: #0969da; }
+    </style>
+</head>
+<body>
+    <h1>🤖 GitHub Bot Comment Hider - Test Page</h1>
+    
+    <div class="test-section">
+        <h2>📋 Extension Testing Instructions</h2>
+        <ol>
+            <li><strong>Install the extension</strong> using the instructions in README.md</li>
+            <li><strong>Open a real GitHub PR</strong> (this test page won't trigger the extension)</li>
+            <li><strong>Look for bot comments</strong> with the "bot" label like the examples below</li>
+            <li><strong>Verify the toggle button</strong> appears and works correctly</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 What the Extension Should Detect</h2>
+        <p>Here are examples of bot comments that should be hidden:</p>
+        
+        <div class="mock-comment timeline-comment">
+            <div class="flex-auto flex-md-self-center">
+                <strong>
+                    <a class="author Link--primary text-bold css-overflow-wrap-anywhere" href="/apps/rubrik-stark-edith">rubrik-stark-edith</a>
+                    <span class="Label Label--secondary">bot</span>
+                </strong>
+                reviewed
+            </div>
+            <div class="comment-body">
+                This PR looks good to me! All checks are passing.
+            </div>
+        </div>
+
+        <div class="mock-comment timeline-comment">
+            <div class="flex-auto flex-md-self-center">
+                <strong>
+                    <a class="author Link--primary text-bold css-overflow-wrap-anywhere" href="/apps/dependabot">dependabot</a>
+                    <span class="Label Label--secondary">bot</span>
+                </strong>
+                commented
+            </div>
+            <div class="comment-body">
+                Bumps package version from 1.0.0 to 1.0.1
+            </div>
+        </div>
+
+        <div class="mock-comment timeline-comment">
+            <div class="flex-auto flex-md-self-center">
+                <strong>
+                    <a class="author Link--primary text-bold css-overflow-wrap-anywhere" href="/codecov">codecov</a>
+                    <span class="Label Label--secondary">app</span>
+                </strong>
+                commented
+            </div>
+            <div class="comment-body">
+                Coverage report: 85.2% (+0.3%)
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>👤 What Should NOT Be Hidden</h2>
+        <p>Human comments like this should remain visible:</p>
+        
+        <div class="mock-comment timeline-comment">
+            <div class="flex-auto flex-md-self-center">
+                <strong>
+                    <a class="author Link--primary text-bold css-overflow-wrap-anywhere" href="/john-doe">john-doe</a>
+                </strong>
+                reviewed
+            </div>
+            <div class="comment-body">
+                Great work! Just a few minor suggestions on the implementation.
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Testing Checklist</h2>
+        <p>When testing on a real GitHub PR, verify:</p>
+        <ul>
+            <li class="info">✓ Toggle button appears in the conversation header</li>
+            <li class="info">✓ Bot comments are hidden by default</li>
+            <li class="info">✓ Button shows count of hidden comments</li>
+            <li class="info">✓ Clicking toggle shows/hides bot comments</li>
+            <li class="info">✓ Extension popup works and shows statistics</li>
+            <li class="info">✓ Settings persist across page refreshes</li>
+            <li class="info">✓ New bot comments are automatically hidden</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🐛 Troubleshooting</h2>
+        <div class="error">
+            <strong>Extension not working?</strong>
+            <ul>
+                <li>Make sure you're on a GitHub pull request page (URL contains /pull/)</li>
+                <li>Check that the extension is enabled in chrome://extensions/</li>
+                <li>Try refreshing the page</li>
+                <li>Open browser console (F12) to check for errors</li>
+            </ul>
+        </div>
+        
+        <div class="success">
+            <strong>Working correctly?</strong>
+            <ul>
+                <li>Bot comments should disappear when the extension loads</li>
+                <li>Toggle button should appear near the conversation header</li>
+                <li>Extension icon should show popup with statistics</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 Ready to Use!</h2>
+        <p>Once you've verified the extension works on a test PR, you're all set! The extension will:</p>
+        <ul>
+            <li>Automatically hide bot comments on all GitHub PRs</li>
+            <li>Remember your preferences</li>
+            <li>Work with new comments as they appear</li>
+            <li>Provide easy toggle controls</li>
+        </ul>
+        <p><strong>Happy reviewing! 🎉</strong></p>
+    </div>
+
+    <script>
+        // Add some interactivity to show what the extension would do
+        document.addEventListener('DOMContentLoaded', function() {
+            const botComments = document.querySelectorAll('.mock-comment');
+            let hidden = false;
+            
+            // Add a demo toggle button
+            const demoButton = document.createElement('button');
+            demoButton.textContent = 'Demo: Hide Bot Comments (3)';
+            demoButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 8px 12px;
+                background: #1f883d;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 12px;
+                z-index: 1000;
+            `;
+            
+            demoButton.addEventListener('click', function() {
+                hidden = !hidden;
+                botComments.forEach((comment, index) => {
+                    if (index < 3) { // First 3 are bot comments
+                        comment.style.display = hidden ? 'none' : 'block';
+                    }
+                });
+                demoButton.textContent = hidden ? 'Demo: Show Bot Comments (3)' : 'Demo: Hide Bot Comments (3)';
+            });
+            
+            document.body.appendChild(demoButton);
+        });
+    </script>
+</body>
+</html>

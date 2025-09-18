@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Detection Debug Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-case {
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+        }
+        .author {
+            font-weight: bold;
+            color: #0969da;
+            text-decoration: none;
+        }
+        .Label {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        .Label--secondary {
+            background: #6e7681;
+            color: white;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .should-hide { background: #dafbe1; color: #1a7f37; }
+        .should-show { background: #fff8c5; color: #9a6700; }
+        .error { background: #ffebe9; color: #d1242f; }
+    </style>
+</head>
+<body>
+    <h1>🐛 Bot Detection Debug Test</h1>
+    <p>This page tests the bot detection logic with the specific HTML structure you provided.</p>
+    
+    <div class="test-case timeline-comment" id="test1">
+        <h3>Test Case 1: Your Specific HTML Structure</h3>
+        <div class="flex-auto flex-md-self-center">
+            <strong>
+                <a class="author Link--primary text-bold css-overflow-wrap-anywhere" show_full_name="false" href="/apps/rubrik-stark-edith">rubrik-stark-edith</a>
+                <span class="Label Label--secondary">bot</span>
+            </strong>
+            reviewed
+            <span class="color-fg-muted">
+                <a href="#pullrequestreview-3196114277" class="js-timestamp Link--secondary" id="pullrequestreview-3196114277-permalink">
+                    <relative-time datetime="2025-09-08T11:29:56Z" class="no-wrap" title="Sep 8, 2025, 4:59 PM GMT+5:30">last week</relative-time>
+                </a>
+            </span>
+        </div>
+        <div class="result" id="result1">Testing...</div>
+    </div>
+
+    <div class="test-case timeline-comment" id="test2">
+        <h3>Test Case 2: Regular Comment Structure</h3>
+        <div class="timeline-comment-header">
+            <h3>
+                <strong>
+                    <a class="author" href="/apps/dependabot">dependabot</a>
+                    <span class="Label Label--secondary">bot</span>
+                </strong>
+                commented
+            </h3>
+        </div>
+        <div class="result" id="result2">Testing...</div>
+    </div>
+
+    <div class="test-case timeline-comment" id="test3">
+        <h3>Test Case 3: Human Comment (Should NOT be hidden)</h3>
+        <div class="timeline-comment-header">
+            <h3>
+                <strong>
+                    <a class="author" href="/john-doe">john-doe</a>
+                </strong>
+                commented
+            </h3>
+        </div>
+        <div class="result" id="result3">Testing...</div>
+    </div>
+
+    <div class="test-case timeline-comment" id="test4">
+        <h3>Test Case 4: Bot in Edit History (Should NOT be hidden)</h3>
+        <div class="timeline-comment-header">
+            <h3>
+                <strong>
+                    <a class="author" href="/human-user">human-user</a>
+                </strong>
+                commented
+            </h3>
+        </div>
+        <div class="js-comment-edit-history">
+            <span>edited by <a href="/apps/some-bot">some-bot</a> <span class="Label Label--secondary">bot</span></span>
+        </div>
+        <div class="result" id="result4">Testing...</div>
+    </div>
+
+    <script>
+        // Simplified version of the bot detection logic for testing
+        function isBotComment(commentElement) {
+            // Priority 1: Look for any bot label that's directly associated with an author
+            const allBotLabels = commentElement.querySelectorAll('.Label--secondary');
+            for (const label of allBotLabels) {
+                if (label.textContent.toLowerCase().trim() === 'bot') {
+                    // Check if this bot label is near an author element (not in edit history)
+                    const nearbyAuthor = label.parentElement?.querySelector('.author') || 
+                                        label.previousElementSibling?.classList?.contains('author') ||
+                                        label.closest('strong')?.querySelector('.author');
+                    
+                    // Skip if this is in edit history
+                    if (label.closest('.js-comment-edit-history')) continue;
+                    
+                    if (nearbyAuthor) {
+                        return true;
+                    }
+                }
+            }
+            
+            // Priority 2: Check main author elements
+            const mainAuthorElement = commentElement.querySelector(
+                '.timeline-comment-header h3 .author, .timeline-comment-header .author, ' +
+                '.flex-auto .author, .review-comment-header .author, ' +
+                '.discussion-item-header .author'
+            );
+            
+            if (mainAuthorElement) {
+                const mainAuthorContainer = mainAuthorElement.closest('strong') || mainAuthorElement.parentElement;
+                const botLabel = mainAuthorContainer?.querySelector('.Label--secondary');
+                if (botLabel && botLabel.textContent.toLowerCase().trim() === 'bot') {
+                    return true;
+                }
+                
+                // Check for /apps/ URL
+                const href = mainAuthorElement.getAttribute('href');
+                if (href && href.includes('/apps/')) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        // Test all cases
+        function runTests() {
+            const testCases = [
+                { id: 'test1', expected: true, description: 'Your specific HTML structure' },
+                { id: 'test2', expected: true, description: 'Regular bot comment' },
+                { id: 'test3', expected: false, description: 'Human comment' },
+                { id: 'test4', expected: false, description: 'Human comment with bot edit history' }
+            ];
+
+            testCases.forEach(testCase => {
+                const element = document.getElementById(testCase.id);
+                const result = isBotComment(element);
+                const resultElement = document.getElementById(`result${testCase.id.slice(-1)}`);
+                
+                if (result === testCase.expected) {
+                    resultElement.className = 'result should-hide';
+                    resultElement.textContent = `✅ CORRECT: ${result ? 'Would be hidden' : 'Would be shown'} (${testCase.description})`;
+                } else {
+                    resultElement.className = 'result error';
+                    resultElement.textContent = `❌ ERROR: Expected ${testCase.expected ? 'hidden' : 'shown'}, got ${result ? 'hidden' : 'shown'}`;
+                }
+            });
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>

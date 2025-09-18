@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Bot Comment Hider</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #24292f;
+      background: #ffffff;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #d0d7de;
+    }
+
+    .header svg {
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .status.enabled {
+      background: #dafbe1;
+      border-color: #1a7f37;
+      color: #1a7f37;
+    }
+
+    .status.disabled {
+      background: #ffebe9;
+      border-color: #d1242f;
+      color: #d1242f;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #d0d7de;
+      transition: 0.3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #1f883d;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      padding: 12px;
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0969da;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #656d76;
+      margin-top: 4px;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      background: #f6f8fa;
+      color: #24292f;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.15s ease-in-out;
+    }
+
+    .btn:hover {
+      background: #f3f4f6;
+      border-color: #d0d7de;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #1f883d;
+      border-color: #1f883d;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1a7f37;
+      border-color: #1a7f37;
+    }
+
+    .footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #d0d7de;
+      text-align: center;
+      font-size: 12px;
+      color: #656d76;
+    }
+
+    .footer a {
+      color: #0969da;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .not-github {
+      text-align: center;
+      padding: 20px;
+      color: #656d76;
+    }
+
+    .not-github svg {
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="github-content">
+    <div class="header">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14.5c-3.58 0-6.5-2.92-6.5-6.5S4.42 1.5 8 1.5s6.5 2.92 6.5 6.5-2.92 6.5-6.5 6.5z"/>
+        <path d="M6.5 5.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm1.5 3.5c0 1.38-1.12 2.5-2.5 2.5h-1c-1.38 0-2.5-1.12-2.5-2.5"/>
+      </svg>
+      <h1>Bot Comment Hider</h1>
+    </div>
+
+    <div id="status" class="status">
+      <span id="status-text">Loading...</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggle-enabled">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <span id="hidden-count" class="stat-number">-</span>
+        <div class="stat-label">Hidden Comments</div>
+      </div>
+      <div class="stat-card">
+        <span id="total-count" class="stat-number">-</span>
+        <div class="stat-label">Total Comments</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="refresh-btn" class="btn btn-primary">Refresh Page</button>
+      <button id="show-all-btn" class="btn">Show All Comments</button>
+      <button id="hide-all-btn" class="btn">Hide All Bot Comments</button>
+    </div>
+
+    <div class="footer">
+      <div>Made for cleaner GitHub PR reviews</div>
+      <div style="margin-top: 4px;">
+        <a href="https://github.com" target="_blank">GitHub</a> • 
+        <a href="#" id="report-issue">Report Issue</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="not-github-content" class="not-github" style="display: none;">
+    <svg width="48" height="48" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+    <div>This extension only works on GitHub.com</div>
+    <div style="margin-top: 8px; font-size: 11px;">Navigate to a GitHub pull request to use this extension.</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
