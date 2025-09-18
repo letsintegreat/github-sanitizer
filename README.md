@@ -9,11 +9,7 @@ A lightweight Chrome extension that hides bot comments in GitHub pull request co
 
 ## Features
 
-- 🤖 **Automatically detects and hides bot comments** from popular services like:
-  - Dependabot, Renovate, GitHub Actions
-  - CodeCov, SonarCloud, Vercel, Netlify
-  - CircleCI, Travis CI, Jenkins
-  - And many more automated services
+- 🤖 **Automatically detects and hides bot comments** using GitHub's official bot labels and specific known bot accounts
 - 🔄 **Toggle visibility** with a single click
 - 📊 **Shows count** of hidden bot comments
 - 🎨 **GitHub-native styling** that matches the site's design
@@ -96,9 +92,9 @@ A lightweight Chrome extension that hides bot comments in GitHub pull request co
 
 ## How It Works
 
-The extension identifies bot comments using multiple detection methods in priority order:
+The extension identifies bot comments using a conservative approach to minimize false positives:
 
-### 1. GitHub's Official Bot Labels (Most Reliable)
+### 1. GitHub's Official Bot Labels (Primary Method)
 
 - Detects the official `<span class="Label Label--secondary">bot</span>` element
 - Also recognizes "app" and "service" labels
@@ -109,23 +105,10 @@ The extension identifies bot comments using multiple detection methods in priori
 - Identifies accounts with `/apps/` in their profile URL
 - These are official GitHub Apps and integrations
 
-### 3. Username Patterns (Fallback)
+### 3. Specific Known Bot Accounts
 
-- Accounts ending with `[bot]` or `bot`
-- Common bot services: `dependabot`, `renovate`, `github-actions`, etc.
-- CI/CD services: `circleci`, `travis`, `jenkins`, etc.
-- Security tools: `snyk`, `gitguardian`, `deepsource`, etc.
-
-### 4. Content Analysis
-
-- Comments containing "automatically generated"
-- Comments with "automated comment" or similar phrases
-- GitHub Action indicators and badges
-
-### 5. Visual Indicators
-
-- Service-specific avatars and indicators
-- GitHub Action workflow indicators
+- Currently includes: `SD-111029` (confirmed bot account)
+- This list is manually curated to avoid false positives
 
 ## File Structure
 
@@ -146,16 +129,16 @@ github-bot-hider/
 
 ## Customization
 
-### Adding More Bot Patterns
+### Adding More Bot Accounts
 
-Edit `content.js` and add patterns to the `botIndicators` array:
+Edit `content.js` and add usernames to the `botUsers` array:
 
 ```javascript
-this.botIndicators = [
-  // Add your custom patterns here
-  /your-custom-bot$/i,
-  /another-pattern/i,
-  // ... existing patterns
+this.botUsers = [
+  "SD-111029",
+  // Add your custom bot usernames here
+  "your-custom-bot-username",
+  "another-bot-account",
 ];
 ```
 
@@ -187,7 +170,7 @@ Modify `popup.html` and `popup.js` to:
 ### Bot Comments Still Visible
 
 1. **Check if extension is enabled**: Click the extension icon to see status
-2. **Unknown bot patterns**: Some bots might not be detected - you can add custom patterns
+2. **Unknown bot accounts**: Some bots might not be detected - you can add specific usernames to the botUsers array
 3. **Page loaded before extension**: Try refreshing the page
 
 ### PR Description Hidden
@@ -240,7 +223,7 @@ Required permissions:
 Feel free to:
 
 - [Report issues or bugs](https://github.com/letsintegreat/github-sanitizer/issues)
-- Suggest new bot patterns to detect
+- Suggest new bot accounts to detect
 - Improve the UI/UX
 - Add new features
 - [Submit pull requests](https://github.com/letsintegreat/github-sanitizer/pulls)

@@ -7,52 +7,6 @@ class GitHubBotHider {
     this.observer = null;
     this.toggleButton = null;
     
-    // Common bot indicators
-    this.botIndicators = [
-      // Bot account patterns
-      /\[bot\]$/i,
-      /bot$/i,
-      /-bot$/i,
-      /^dependabot/i,
-      /^renovate/i,
-      /^github-actions/i,
-      /^codecov/i,
-      /^sonarcloud/i,
-      /^vercel/i,
-      /^netlify/i,
-      /^circleci/i,
-      /^travis/i,
-      /^jenkins/i,
-      /^azure-pipelines/i,
-      /^gitguardian/i,
-      /^snyk/i,
-      /^deepsource/i,
-      /^codeclimate/i,
-      /^lighthouse/i,
-      /^bundlesize/i,
-      /^size-limit/i,
-      /^semantic-release/i,
-      /^greenkeeper/i,
-      /^pyup/i,
-      /^safety/i,
-      /^whitesource/i,
-      /^mend/i,
-      /^fossabot/i,
-      /^allcontributors/i,
-      /^stale/i,
-      /^lock/i,
-      /^mergify/i,
-      /^bors/i,
-      /^homu/i,
-      /^bulldozer/i,
-      /^danger/i,
-      /^hound/i,
-      /^pronto/i,
-      /^rubocop/i,
-      /^eslint/i,
-      /^prettier/i,
-      /^stylelint/i
-    ];
 
     // Specific bot-like users (without "bot" label)
     this.botUsers = [
@@ -209,13 +163,8 @@ class GitHubBotHider {
         return true;
       }
 
-      // Check username patterns for main author
-      const username = mainAuthorElement.textContent.trim();
-      if (this.botIndicators.some(pattern => pattern.test(username))) {
-        return true;
-      }
-
       // Check specific bot users
+      const username = mainAuthorElement.textContent.trim();
       if (this.botUsers.includes(username)) {
         return true;
       }
@@ -236,23 +185,6 @@ class GitHubBotHider {
         return true;
       }
     }
-
-    // Priority 5: Check for automated commit messages or system messages
-    const commentBody = commentElement.querySelector('.comment-body, .timeline-comment-text');
-    if (commentBody) {
-      const text = commentBody.textContent.toLowerCase();
-      if (text.includes('automatically generated') ||
-          text.includes('auto-generated') ||
-          text.includes('this is an automated') ||
-          text.includes('automated comment') ||
-          text.includes('bot comment')) {
-        return true;
-      }
-    }
-
-    // Priority 6: Check for specific GitHub action indicators
-    const actionIndicator = commentElement.querySelector('[title*="github-actions"], [alt*="github-actions"]');
-    if (actionIndicator) return true;
 
     return false;
   }
